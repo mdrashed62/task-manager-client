@@ -26,6 +26,11 @@ function Navbar() {
   };
 
 
+  const handleLogin = () => {
+    navigate("/login");
+  }
+
+
 
   return (
     <nav className="bg-slate-800 text-white/80 shadow-lg py-4 sticky top-0 z-50">
@@ -82,7 +87,9 @@ function Navbar() {
                 )}
               </div>
             ) : (
-              "X"
+              <div>
+                <button onClick={handleLogin}>Login</button>
+              </div>
             )}
           </div>
         </div>
