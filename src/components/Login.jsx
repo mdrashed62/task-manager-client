@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
 import toast from "react-hot-toast";
@@ -27,10 +28,7 @@ function Login() {
       const result = await login(formData.email, formData.password);
       
       if (result.success) {
-        toast.success("Welcome! Login successful");
         navigate("/");
-      } else {
-        toast.error(result.message);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -51,7 +49,7 @@ function Login() {
             Or{" "}
             <Link
               to="/register"
-              className="font-medium text-[#5950d7]"
+              className="font-medium text-[#5950d7] hover:text-[#4038a5] transition duration-200"
             >
               create a new account
             </Link>
@@ -75,7 +73,7 @@ function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
               />
             </div>
 
@@ -94,7 +92,7 @@ function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
               />
             </div>
           </div>
@@ -103,7 +101,7 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-700 hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
               {loading ? (
                 <div className="flex items-center">

@@ -1,5 +1,6 @@
+// src/store/taskStore.js
 import { create } from "zustand";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import toast from "react-hot-toast";
 
 const useTaskStore = create((set, get) => ({
@@ -30,9 +31,24 @@ const useTaskStore = create((set, get) => ({
   setEditTitle: (title) => set({ editTitle: title }),
   setEditDescription: (desc) => set({ editDescription: desc }),
   setEditStatus: (status) => set({ editStatus: status }),
-  setEditingTask: (task) => set({ editingTask: task }),
+  setEditingTask: (task) => {
+    if (task) {
+      set({ 
+        editingTask: task,
+        editTitle: task.title,
+        editDescription: task.description,
+        editStatus: task.status
+      });
+    } else {
+      set({ 
+        editingTask: null,
+        editTitle: "",
+        editDescription: "",
+        editStatus: "pending"
+      });
+    }
+  },
   setIsModalOpen: (isOpen) => set({ isModalOpen: isOpen }),
-
 
   fetchTasks: async () => {
     try {
@@ -40,16 +56,21 @@ const useTaskStore = create((set, get) => ({
       const { filter } = get();
 
       const res = await axios.get(
-        `https://backend-tau-seven-87.vercel.app/tasks${
-          filter !== "all" ? `?status=${filter}` : ""
-        }`,
-        { withCredentials: true }
+        `/tasks${filter !== "all" ? `?status=${filter}` : ""}`
       );
 
-      set({ tasks: res.data.tasks });
+      if (res.data.success) {
+        set({ tasks: res.data.tasks });
+      } else {
+        toast.error(res.data.message || "Failed to fetch tasks");
+      }
     } catch (error) {
       console.error("Error fetching tasks:", error);
-      toast.error("Failed to fetch tasks!");
+      if (error.response?.status === 401) {
+        toast.error("Please login to view tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to fetch tasks!");
+      }
     } finally {
       set({ loading: false });
     }
@@ -60,18 +81,19 @@ const useTaskStore = create((set, get) => ({
       set({ creating: true });
       const { createTitle, createDescription, createStatus } = get();
 
-      const res = await axios.post(
-        "https://backend-tau-seven-87.vercel.app/tasks",
-        {
-          title: createTitle,
-          description: createDescription,
-          status: createStatus,
-        },
-        { withCredentials: true }
-      );
+      if (!createTitle.trim()) {
+        toast.error("Task title is required");
+        return;
+      }
+
+      const res = await axios.post("/tasks", {
+        title: createTitle,
+        description: createDescription,
+        status: createStatus,
+      });
 
       if (res.data.success) {
-        toast.success(res.data.message);
+        toast.success("Task created successfully!");
         set({
           createTitle: "",
           createDescription: "",
@@ -83,7 +105,11 @@ const useTaskStore = create((set, get) => ({
       }
     } catch (error) {
       console.error("Error creating task:", error);
-      toast.error(error.response?.data?.message || "Failed to create task");
+      if (error.response?.status === 401) {
+        toast.error("Please login to create tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to create task");
+      }
     } finally {
       set({ creating: false });
     }
@@ -93,50 +119,73 @@ const useTaskStore = create((set, get) => ({
     try {
       set({ loading: true });
       const { editingTask, editTitle, editDescription, editStatus } = get();
-      if (!editingTask) return;
+      
+      if (!editingTask) {
+        toast.error("No task selected for editing");
+        return;
+      }
+
+      if (!editTitle.trim()) {
+        toast.error("Task title is required");
+        return;
+      }
 
       const res = await axios.put(
-        `https://backend-tau-seven-87.vercel.app/tasks/${editingTask._id}`,
+        `/tasks/${editingTask._id}`,
         {
           title: editTitle,
           description: editDescription,
           status: editStatus,
-        },
-        { withCredentials: true }
+        }
       );
 
       if (res.data.success) {
-        toast.success(res.data.message);
-        set({ isModalOpen: false, editingTask: null });
+        toast.success("Task updated successfully!");
+        set({ 
+          isModalOpen: false, 
+          editingTask: null,
+          editTitle: "",
+          editDescription: "",
+          editStatus: "pending"
+        });
         get().fetchTasks();
       } else {
         toast.error(res.data.message || "Failed to update task");
       }
     } catch (error) {
       console.error("Error updating task:", error);
-      toast.error(error.response?.data?.message || "Failed to update task");
+      if (error.response?.status === 401) {
+        toast.error("Please login to update tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to update task");
+      }
     } finally {
       set({ loading: false });
     }
   },
 
   deleteTask: async (id) => {
+    if (!window.confirm("Are you sure you want to delete this task?")) {
+      return;
+    }
+
     try {
       set({ loading: true });
-      const res = await axios.delete(
-        `https://backend-tau-seven-87.vercel.app/tasks/${id}`,
-        { withCredentials: true }
-      );
+      const res = await axios.delete(`/tasks/${id}`);
 
       if (res.data.success) {
-        toast.success(res.data.message);
+        toast.success("Task deleted successfully!");
         get().fetchTasks();
       } else {
         toast.error(res.data.message || "Failed to delete task");
       }
     } catch (error) {
       console.error("Error deleting task:", error);
-      toast.error(error.response?.data?.message || "Failed to delete task");
+      if (error.response?.status === 401) {
+        toast.error("Please login to delete tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to delete task");
+      }
     } finally {
       set({ loading: false });
     }
@@ -145,23 +194,21 @@ const useTaskStore = create((set, get) => ({
   toggleTask: async (id) => {
     try {
       set({ loading: true });
-      const res = await axios.patch(
-        `https://backend-tau-seven-87.vercel.app/tasks/${id}/toggle`,
-        {},
-        { withCredentials: true }
-      );
+      const res = await axios.patch(`/tasks/${id}/toggle`);
 
       if (res.data.success) {
-        toast.success(res.data.message);
+        toast.success("Task status updated!");
         get().fetchTasks();
       } else {
         toast.error(res.data.message || "Failed to toggle task status");
       }
     } catch (error) {
       console.error("Error toggling task:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to toggle task status"
-      );
+      if (error.response?.status === 401) {
+        toast.error("Please login to update tasks");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to toggle task status");
+      }
     } finally {
       set({ loading: false });
     }
