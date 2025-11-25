@@ -33,15 +33,19 @@ const useTaskStore = create((set, get) => ({
   setEditingTask: (task) => set({ editingTask: task }),
   setIsModalOpen: (isOpen) => set({ isModalOpen: isOpen }),
 
+
   fetchTasks: async () => {
     try {
       set({ loading: true });
       const { filter } = get();
+
       const res = await axios.get(
-        `https://backend-tau-seven-87.vercel.app/tasks${
+        `http://localhost:7000/tasks${
           filter !== "all" ? `?status=${filter}` : ""
-        }`
+        }`,
+        { withCredentials: true }
       );
+
       set({ tasks: res.data.tasks });
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -50,15 +54,21 @@ const useTaskStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+
   createTask: async () => {
     try {
-      set({ creating: true }); // ✅ Use separate creating state
+      set({ creating: true });
       const { createTitle, createDescription, createStatus } = get();
-      const res = await axios.post("https://backend-tau-seven-87.vercel.app/tasks", {
-        title: createTitle,
-        description: createDescription,
-        status: createStatus,
-      });
+
+      const res = await axios.post(
+        "http://localhost:7000/tasks",
+        {
+          title: createTitle,
+          description: createDescription,
+          status: createStatus,
+        },
+        { withCredentials: true }
+      );
 
       if (res.data.success) {
         toast.success(res.data.message);
@@ -86,12 +96,13 @@ const useTaskStore = create((set, get) => ({
       if (!editingTask) return;
 
       const res = await axios.put(
-        `https://backend-tau-seven-87.vercel.app/tasks/${editingTask._id}`,
+        `http://localhost:7000/tasks/${editingTask._id}`,
         {
           title: editTitle,
           description: editDescription,
           status: editStatus,
-        }
+        },
+        { withCredentials: true }
       );
 
       if (res.data.success) {
@@ -113,8 +124,10 @@ const useTaskStore = create((set, get) => ({
     try {
       set({ loading: true });
       const res = await axios.delete(
-        `https://backend-tau-seven-87.vercel.app/tasks/${id}`
+        `http://localhost:7000/tasks/${id}`,
+        { withCredentials: true }
       );
+
       if (res.data.success) {
         toast.success(res.data.message);
         get().fetchTasks();
@@ -133,8 +146,11 @@ const useTaskStore = create((set, get) => ({
     try {
       set({ loading: true });
       const res = await axios.patch(
-        `https://backend-tau-seven-87.vercel.app/tasks/${id}/toggle`
+        `http://localhost:7000/tasks/${id}/toggle`,
+        {},
+        { withCredentials: true }
       );
+
       if (res.data.success) {
         toast.success(res.data.message);
         get().fetchTasks();
