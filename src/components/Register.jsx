@@ -30,7 +30,7 @@ function Register() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://backend-tau-seven-87.vercel.app/register",
+        "http://localhost:7000/register",
         formData,
         {
           withCredentials: true,

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Navbar from '../components/home/Navbar';
+import Navbar from '../components/home/Navbar.jsx';
 
 function Layout() {
   return (

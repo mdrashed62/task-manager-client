@@ -15,7 +15,7 @@ ReactDOM.createRoot(root).render(
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<App />} />
-        <Route path="tasks" element={<ProductCards />} />
+        <Route path="products" element={<ProductCards />} />
         <Route path="register" element={<Register />} />
         <Route path="login" element={<Login />} />
       </Route>
