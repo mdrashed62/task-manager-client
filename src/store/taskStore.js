@@ -40,7 +40,7 @@ const useTaskStore = create((set, get) => ({
       const { filter } = get();
 
       const res = await axios.get(
-        `http://localhost:7000/tasks${
+        `https://backend-tau-seven-87.vercel.app/tasks${
           filter !== "all" ? `?status=${filter}` : ""
         }`,
         { withCredentials: true }
@@ -61,7 +61,7 @@ const useTaskStore = create((set, get) => ({
       const { createTitle, createDescription, createStatus } = get();
 
       const res = await axios.post(
-        "http://localhost:7000/tasks",
+        "https://backend-tau-seven-87.vercel.app/tasks",
         {
           title: createTitle,
           description: createDescription,
@@ -96,7 +96,7 @@ const useTaskStore = create((set, get) => ({
       if (!editingTask) return;
 
       const res = await axios.put(
-        `http://localhost:7000/tasks/${editingTask._id}`,
+        `https://backend-tau-seven-87.vercel.app/tasks/${editingTask._id}`,
         {
           title: editTitle,
           description: editDescription,
@@ -124,7 +124,7 @@ const useTaskStore = create((set, get) => ({
     try {
       set({ loading: true });
       const res = await axios.delete(
-        `http://localhost:7000/tasks/${id}`,
+        `https://backend-tau-seven-87.vercel.app/tasks/${id}`,
         { withCredentials: true }
       );
 
@@ -146,7 +146,7 @@ const useTaskStore = create((set, get) => ({
     try {
       set({ loading: true });
       const res = await axios.patch(
-        `http://localhost:7000/tasks/${id}/toggle`,
+        `https://backend-tau-seven-87.vercel.app/tasks/${id}/toggle`,
         {},
         { withCredentials: true }
       );
