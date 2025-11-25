@@ -8,7 +8,7 @@ const useAuthStore = create((set) => ({
   fetchUser: async () => {
     try {
       set({ loading: true });
-      const response = await axios.get("https://backend-tau-seven-87.vercel.app//me", { 
+      const response = await axios.get("https://backend-tau-seven-87.vercel.app/me", { 
         withCredentials: true 
       });
       if (response.data.success) {
@@ -30,7 +30,7 @@ const useAuthStore = create((set) => ({
     try {
       set({ loading: true });
       const response = await axios.post(
-        "https://backend-tau-seven-87.vercel.app//login",
+        "https://backend-tau-seven-87.vercel.app/login",
         { email, password },
         {
           withCredentials: true,
@@ -57,7 +57,7 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       set({ loading: true });
-      const response = await axios.get("https://backend-tau-seven-87.vercel.app//logout", {
+      const response = await axios.get("https://backend-tau-seven-87.vercel.app/logout", {
         withCredentials: true,
       });
       if (response.data.success) {
