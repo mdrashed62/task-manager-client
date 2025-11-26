@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "../utils/axiosConfig";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const useTaskStore = create((set, get) => ({
   tasks: [],
@@ -17,6 +17,9 @@ const useTaskStore = create((set, get) => ({
   editStatus: "pending",
   editingTask: null,
   isModalOpen: false,
+  toggleLoadingId: null,
+
+  setToggleLoading: (id) => set({ toggleLoadingId: id }),
 
   setTasks: (tasks) => set({ tasks }),
   setFilter: (filter) => set({ filter }),
@@ -176,7 +179,6 @@ const useTaskStore = create((set, get) => ({
   },
 
   deleteTask: async (id) => {
-    
     try {
       set({ loading: true });
       const res = await axios.delete(`/tasks/${id}`);
@@ -201,32 +203,35 @@ const useTaskStore = create((set, get) => ({
     }
   },
 
-  toggleTask: async (id) => {
-    try {
-      set({ loading: true });
-      const res = await axios.patch(`/tasks/${id}/toggle`);
+toggleTask: async (id) => {
+  const { setToggleLoading } = get();
 
-      console.log("Toggle task response:", res.data);
+  try {
+    setToggleLoading(id); 
+    const res = await axios.patch(`/tasks/${id}/toggle`);
 
-      if (res.data.success) {
-        toast.success("Task status updated!");
-        get().fetchTasks();
-      } else {
-        toast.error(res.data.message || "Failed to toggle task status");
-      }
-    } catch (error) {
-      console.error("Error toggling task:", error);
-      if (error.response?.status === 401) {
-        toast.error("Please login to update tasks");
-      } else {
-        toast.error(
-          error.response?.data?.message || "Failed to toggle task status"
-        );
-      }
-    } finally {
-      set({ loading: false });
+    console.log("Toggle task response:", res.data);
+
+    if (res.data.success) {
+      toast.success("Task status updated!");
+      await get().fetchTasks();
+    } else {
+      toast.error(res.data.message || "Failed to toggle task status");
     }
-  },
+  } catch (error) {
+    console.error("Error toggling task:", error);
+    if (error.response?.status === 401) {
+      toast.error("Please login to update tasks");
+    } else {
+      toast.error(
+        error.response?.data?.message || "Failed to toggle task status"
+      );
+    }
+  } finally {
+    setToggleLoading(null);
+  }
+},
+
 }));
 
 export default useTaskStore;

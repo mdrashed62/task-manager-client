@@ -1,4 +1,5 @@
 import React from "react";
+import useTaskStore from "../../store/taskStore";
 
 export default function TaskList({
   tasks,
@@ -6,6 +7,8 @@ export default function TaskList({
   handleDelete,
   handleToggle,
 }) {
+  const { toggleLoadingId } = useTaskStore();
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {tasks?.length > 0 ? (
@@ -17,14 +20,21 @@ export default function TaskList({
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold mb-2">{task.title}</h3>
               <button
-                onClick={() => handleToggle(task._id, task.status)}
-                className={`px-3 py-1 text-sm rounded-full mb-3 transition-colors duration-200 ${
+                onClick={() => handleToggle(task._id)}
+                disabled={toggleLoadingId === task._id}
+                className={`px-3 py-1 text-sm rounded-full mb-3 flex items-center justify-center transition-colors duration-200 ${
                   task.status === "completed"
                     ? "bg-green-100 text-green-700 hover:bg-green-200"
                     : "bg-orange-100 text-orange-700 hover:bg-orange-200"
                 }`}
               >
-                {task.status === "completed" ? "Completed" : "Pending"}
+                {toggleLoadingId === task._id ? (
+                  <div className="w-4 h-4 border-2 border-t-transparent border-current rounded-full animate-spin"></div>
+                ) : task.status === "completed" ? (
+                  "Completed"
+                ) : (
+                  "Pending"
+                )}
               </button>
             </div>
             <p className="text-gray-600 mb-3">{task.description}</p>
