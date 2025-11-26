@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import TaskForm from "./task-form";
 import useTaskStore from "../../store/taskStore";
 import TaskList from "./task-list";
-import { Toaster } from "react-hot-toast";
 
 function TaskCards() {
   const {
@@ -219,12 +218,6 @@ function TaskCards() {
           </div>
         </div>
       )}
-
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        toastOptions={{ duration: 2000 }}
-      />
     </div>
   );
 }

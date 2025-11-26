@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "../utils/axiosConfig";
-import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
 
 const useAuthStore = create((set, get) => ({
   user: null,
@@ -47,7 +47,7 @@ const useAuthStore = create((set, get) => ({
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       const response = await axios.get("/me");
-      console.log("🔐 Auth response:", response.data);
+      console.log("Auth response:", response.data);
 
       if (response.data.success && response.data.user) {
         set({ user: response.data.user, isInitialized: true, loading: false });
@@ -57,7 +57,7 @@ const useAuthStore = create((set, get) => ({
         set({ user: null, isInitialized: true, loading: false });
       }
     } catch (error) {
-      console.log("🔐 Auth initialization failed:", error);
+      console.log("Auth initialization failed:", error);
       localStorage.removeItem("token");
       delete axios.defaults.headers.common["Authorization"];
       set({ user: null, isInitialized: true, loading: false });
@@ -74,7 +74,7 @@ const useAuthStore = create((set, get) => ({
 
       set({ loading: true, error: null });
       const response = await axios.post("/login", { email, password });
-      console.log("🔐 Login response:", response.data);
+      console.log("Login response:", response.data);
 
       if (response.data.success && response.data.user) {
         const user = response.data.user;
@@ -84,7 +84,7 @@ const useAuthStore = create((set, get) => ({
           axios.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${response.data.token}`;
-          console.log("🔐 Token stored in localStorage");
+          console.log("Token stored in localStorage");
         }
 
         setTimeout(() => {

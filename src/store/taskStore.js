@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "../utils/axiosConfig";
-import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
 
 const useTaskStore = create((set, get) => ({
   tasks: [],
@@ -176,10 +176,7 @@ const useTaskStore = create((set, get) => ({
   },
 
   deleteTask: async (id) => {
-    if (!window.confirm("Are you sure you want to delete this task?")) {
-      return;
-    }
-
+    
     try {
       set({ loading: true });
       const res = await axios.delete(`/tasks/${id}`);
