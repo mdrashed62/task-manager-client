@@ -1,40 +1,20 @@
-// src/components/Login.jsx
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; 
-import toast from "react-hot-toast";
+import React from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 
 function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
-  const { login } = useAuthStore();
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const { email, password, loading, setEmail, setPassword, login } =
+    useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.email || !formData.password) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await login(formData.email, formData.password);
-      
-      if (result.success) {
-        navigate("/");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Login failed!");
-    } finally {
-      setLoading(false);
+    const result = await login();
+    if (result.success) {
+      navigate(from, { replace: true });
     }
   };
 
@@ -69,9 +49,8 @@ function Login() {
                 id="email"
                 name="email"
                 type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
               />
@@ -88,9 +67,8 @@ function Login() {
                 id="password"
                 name="password"
                 type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
               />

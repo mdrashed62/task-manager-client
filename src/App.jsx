@@ -1,4 +1,3 @@
-// App.jsx
 import './App.css'
 import TaskCards from './pages/tasks/tasks';
 
